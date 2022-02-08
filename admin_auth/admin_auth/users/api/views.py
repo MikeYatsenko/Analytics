@@ -7,6 +7,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, views
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError, force_bytes
@@ -15,7 +16,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 
 from .serializers import (RegisterSerializer, EmailVerificationSerializer,
-                          LoginSerializer)
+                          LoginSerializer, LogOutSerializer)
+
+
+
 from ..models import User
 from ..utils import Utils
 
@@ -76,3 +80,14 @@ class LoginAPIView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class LogOutAPIView(GenericAPIView):
+    serializer_class = LogOutSerializer
+
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        serializer=self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
