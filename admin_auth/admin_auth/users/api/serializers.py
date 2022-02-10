@@ -4,6 +4,7 @@ from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=4, write_only=True)
 
@@ -27,11 +28,11 @@ class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=50)
     password = serializers.CharField(max_length=50, min_length=8, write_only=True)
     username = serializers.CharField(max_length=225, read_only=True)
-    token = serializers.CharField(max_length=555, read_only=True)
+    tokens = serializers.CharField(max_length=555, read_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'username', 'token']
+        fields = ['email', 'password', 'username', 'tokens']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -48,15 +49,19 @@ class LoginSerializer(serializers.ModelSerializer):
         return {
             'email': user.email,
             'username': user.username,
-            'token': user.token
+            'tokens': user.tokens
         }
 
 
 class LogOutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
+    default_error_messages = {
+        'bad_token': ('Token is expired or invalid')
+    }
+
     def validate(self, attrs):
-        self.token = attrs.get['refresh']
+        self.token = attrs['refresh']
 
         return attrs
 
@@ -65,4 +70,4 @@ class LogOutSerializer(serializers.Serializer):
         try:
             RefreshToken(self.token).blacklist()
         except TokenError:
-            self.fail('Bad token')
+            self.fail('bad_token')
