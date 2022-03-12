@@ -1,7 +1,7 @@
 FROM python:3.8-slim-buster
 
 # set work directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -14,8 +14,6 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
 # copy project
-COPY . .
+COPY  . .
 
 EXPOSE 8000
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000" ]
