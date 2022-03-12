@@ -4,7 +4,6 @@ from app.extract import api
 from app.extract.utils import analytics_run
 
 
-
 class HelloWorld(Resource):
     def get(self):
         return {'hello': 'world'}
